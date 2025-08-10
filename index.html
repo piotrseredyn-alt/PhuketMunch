@@ -1,0 +1,132 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'>
+<meta http-equiv='Content-Security-Policy' content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' data:;">
+<meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'>
+<title>Phuket Munch F2P (Electron) — v1.0.14</title><link rel='stylesheet' href='style.css'><style>.assets{display:none}</style></head>
+<body>
+<div id='ui'><div class='hud'><div>Score: <span id='score'>0</span></div><div>Lives: <span id='lives'>3</span></div><div>Diamonds: <span id='diamonds'>50</span></div><div>Level: <span id='level'>1</span></div><div>Mode: <span id='mode'>normal</span></div></div><div class='menu-buttons'><button id='btnShop'>Shop</button><button id='btnLeaderboard'>Leaderboard</button><button id='btnMute'>🔊</button></div></div><canvas id='game' width='864' height='864'></canvas>
+
+<!-- Welcome -->
+<div id='welcome' class='overlay show fade-enter'>
+  <div class='welcome-bg'></div>
+  <div class='panel'>
+    <h2 class='title'>Phuket Munch</h2>
+    <p class='note'>Munch coconuts for points, mango for big bonus, durian to scare ghosts, and Red Bull for a short speed boost.</p>
+    <button id='welcomeStart' class='btn'>Sawasdee Na</button>
+  </div>
+</div>
+
+<!-- Instructions -->
+<div id='howto' class='overlay'>
+  <div class='panel'>
+    <h3>How to play</h3>
+    <div class='keys'>
+      <div class='key'>
+        <svg viewBox='0 0 64 64'><rect x='8' y='8' width='48' height='48' rx='8' fill='#0e3940' stroke='#3dd'/><polygon points='32,18 22,34 42,34' fill='#3dd'/></svg>
+        <div>Up</div>
+      </div>
+      <div class='key'>
+        <svg viewBox='0 0 64 64'><rect x='8' y='8' width='48' height='48' rx='8' fill='#0e3940' stroke='#3dd'/><polygon points='18,32 34,22 34,42' fill='#3dd'/></svg>
+        <div>Left</div>
+      </div>
+      <div class='key'>
+        <svg viewBox='0 0 64 64'><rect x='8' y='8' width='48' height='48' rx='8' fill='#0e3940' stroke='#3dd'/><polygon points='46,32 30,22 30,42' fill='#3dd'/></svg>
+        <div>Right</div>
+      </div>
+      <div class='key'>
+        <svg viewBox='0 0 64 64'><rect x='8' y='8' width='48' height='48' rx='8' fill='#0e3940' stroke='#3dd'/><polygon points='32,46 22,30 42,30' fill='#3dd'/></svg>
+        <div>Down</div>
+      </div>
+    </div>
+    <p class='note'>Controls: Arrow keys or WASD. Coconut = +10, Mango = +200, Durian = frightened mode, Red Bull = turbo.</p>
+    <button id='howtoNext' class='btn'>Next</button>
+  </div>
+</div>
+
+
+<!-- Instructions -->
+<div id='instructions' class='overlay hidden'>
+  <div class='panel fadein'>
+    <div style='display:flex;gap:12px;align-items:center;justify-content:center'>
+      <img src='assets/images/bigbuddha.png' alt='Big Buddha' style='width:64px;height:64px;border-radius:8px;object-fit:cover' class='fadein'>
+      <div class='fadein'>
+        <h3>Welcome to Phuket Munch!</h3>
+        <p style='max-width:540px;margin:6px auto 0'>
+          Your mission is to collect all the coconuts while avoiding the Naga spirits.
+          Eat a <b>mango</b> for a big points boost, a <b>Red Bull</b> for speed, and a <b>durian</b> to scare the spirits —
+          but beware: they’ll return angrier!
+        </p>
+      </div>
+    </div>
+    <div style='margin-top:12px'><button id='instructionsNext' class='btn'>Continue</button></div>
+  </div>
+</div>
+
+<!-- Vehicle Select -->
+<div id='vehicle' class='overlay'>
+  <div class='panel'>
+    <h3>Select your vehicle</h3>
+    <div class='vehicle-select'>
+      <label class='vehicle' id='opt-boat'>
+        <input type='radio' name='vehicle' value='boat' checked>
+        <img src='assets/images/boat.png' alt='Boat'><span>Boat</span>
+      </label>
+      <label class='vehicle dim' id='opt-tuktuk'>
+        <input type='radio' name='vehicle' value='tuktuk'>
+        <img src='assets/images/tuktuk.png' alt='Tuk-tuk'><span>Tuk-tuk</span>
+      </label>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Game Over / Shop / Leaderboard / Ads -->
+<div id='gameOver' class='overlay hidden'><div class='panel'><h3>Game Over</h3><p>Score: <span id='finalScore'>0</span></p>
+<div style='display:flex;gap:8px;justify-content:center;flex-wrap:wrap'>
+<button id='btnRetry' class='btn'>Play Again</button>
+<button id='btnAdLife' class='btn'>Ad for +1 Life</button>
+<button id='btnBuyLife' class='btn'>+1 Life (20💎)</button></div>
+<div style='margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap'>
+<input id='nickname' placeholder='Nickname' maxlength='16'><button id='btnSubmitScore' class='btn'>Submit Score</button></div>
+</div></div>
+
+<div id='shop' class='overlay hidden'><div class='panel'><h3>Shop</h3><p>You have: <b><span id='shopDiamonds'>0</span> 💎</b></p>
+<div style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px'>
+<button class='buy-pack btn' data-pack='small'>100 💎 — $0.99</button>
+<button class='buy-pack btn' data-pack='medium'>500 💎 — $3.99</button>
+<button class='buy-pack btn' data-pack='large'>2000 💎 — $9.99</button></div>
+<div style='margin:8px 0'><button id='buyLifeWithDiamonds' class='btn'>+1 Life — 20 💎</button></div>
+<div><button id='closeShop' class='btn'>Close</button></div>
+<small class='note'>*Payments and ads are mocked in this Lite version.</small></div></div>
+
+<div id='leaderboard' class='overlay hidden'><div class='panel'><h3>Leaderboard (Top 20)</h3><ol id='leaderboardList' style='max-height:300px;overflow:auto;text-align:left'></ol><div><button id='closeLeaderboard' class='btn'>Close</button></div></div></div>
+
+<div id='adModal' class='overlay hidden'><div class='panel'><h3>Ad</h3><p>Your reward in 5s…</p><div id='adCountdown' style='font-size:28px;margin:8px 0'>5</div><button id='skipAd' class='btn hidden'>Close</button></div></div>
+
+<!-- IMAGES -->
+<img id='img-bg' class='assets' src='assets/images/background.png'>
+<img id='img-boat' class='assets' src='assets/images/boat.png'>
+<img id='img-tuktuk' class='assets' src='assets/images/tuktuk.png'>
+<img id='img-ghost' class='assets' src='assets/images/ghost.png'>
+<img id='img-coconut' class='assets' src='assets/images/coconut.png'>
+<img id='img-palm' class='assets' src='assets/images/palm.png'>
+<img id='img-mango' class='assets' src='assets/images/mango.png'>
+<img id='img-durian' class='assets' src='assets/images/durian.png'>
+<img id='img-redbull' class='assets' src='assets/images/redbull.png'>
+
+<!-- MUSIC -->
+<audio id='audio-intro' src='assets/music/Intro.mp3' preload='auto' loop autoplay></audio>
+<audio id='audio-level1' src='assets/music/Level1.mp3' preload='auto' loop></audio>
+<audio id='audio-level2' src='assets/music/Level2.mp3' preload='auto' loop></audio>
+<audio id='audio-level3' src='assets/music/Level3.mp3' preload='auto' loop></audio>
+
+<!-- SFX -->
+<audio id='sfx-eat' src='assets/sfx/eat.mp3' preload='auto'></audio>
+<audio id='sfx-powerup' src='assets/sfx/powerup.mp3' preload='auto'></audio>
+<audio id='sfx-hit' src='assets/sfx/hit.mp3' preload='auto'></audio>
+<audio id='sfx-durian' src='assets/sfx/durian.mp3' preload='auto'></audio>
+<audio id='sfx-fright' src='assets/sfx/frightened.mp3' preload='auto'></audio>
+<audio id='sfx-mango' src='assets/sfx/mango.mp3' preload='auto'></audio>
+
+<footer><small>Lite • v1.0.22</small></footer>
+<script src='ads.js'></script><script src='iap.js'></script><script src='leaderboard.js'></script><script src='renderer.js'></script>
+</body></html>

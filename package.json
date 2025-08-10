@@ -1,0 +1,32 @@
+{
+  "name": "phuket-munch-f2p-lite",
+  "version": "1.0.22",
+  "description": "Phuket Munch (Electron F2P) \u2014 Lite: Welcome fix, English UI. No assets.",
+  "main": "main.js",
+  "author": "You",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.example.phuketmunchf2plite",
+    "productName": "Phuket Munch F2P",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "style.css",
+      "renderer.js",
+      "ads.js",
+      "iap.js",
+      "leaderboard.js",
+      "CHANGELOG.md",
+      "assets/**/*"
+    ]
+  }
+}

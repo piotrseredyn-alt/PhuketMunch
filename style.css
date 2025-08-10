@@ -1,0 +1,53 @@
+
+*{box-sizing:border-box}body{margin:0;background:#062a2e;color:#f0f7f7;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial}
+#ui{position:fixed;top:0;left:0;right:0;padding:8px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,0));z-index:2}
+#ui h1{margin:0;font-size:24px;letter-spacing:1px}.subtitle{font-size:12px;opacity:.8}
+.hud{display:flex;gap:18px;font-weight:600;align-items:center}.menu-buttons{display:flex;gap:10px}
+#game{display:block;margin:140px auto 8px auto;max-width:95vw;max-height:74vh;background:#06343a;border:2px solid #2bb;box-shadow:0 0 40px rgba(0,255,255,.15)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:6;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.overlay.show{opacity:1;pointer-events:auto}
+.panel{background:#0d3135;border:1px solid #38cfd3;border-radius:12px;padding:20px;max-width:680px;text-align:center;color:#dff;box-shadow:0 0 30px rgba(0,255,255,.2)}
+.title{font-size:40px;letter-spacing:1px;margin:0 0 8px 0;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+.btn{background:#14a3b2;border:1px solid #3dd;border-radius:10px;color:#042;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(1.06)}
+#welcomeStart{margin-top:16px} /* lower button */
+.note{opacity:.8;font-size:14px;margin:8px auto 0;max-width:560px}
+.fade-leave{animation:fadeOut .6s ease both}.fade-enter{animation:fadeIn 1s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+/* Vehicle selection */
+.vehicle-select{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.vehicle{display:flex;flex-direction:column;align-items:center;border:1px solid #3dd;border-radius:12px;padding:10px 14px;background:#0e3940;cursor:pointer;transition:transform .2s ease, filter .2s ease}
+.vehicle img{width:112px;height:112px;image-rendering:pixelated;border-radius:10px}
+.vehicle input{display:none}.vehicle span{margin-top:6px;font-weight:600}
+.vehicle:hover{transform:translateY(-2px)}.dim{filter:grayscale(75%) brightness(.9)}
+footer{position:fixed;bottom:4px;left:0;right:0;text-align:center;opacity:.5;font-size:11px}
+.keys{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.key{display:flex;flex-direction:column;align-items:center;gap:6px}
+.key svg{width:54px;height:54px}
+
+.hidden{display:none}
+
+
+/* v1.0.18 welcome wavy background */
+#welcome{position:fixed;overflow:hidden}
+.welcome-bg{position:absolute;inset:0;opacity:.22;pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 30%, #24e0ff44 0 12%, transparent 13% 100%),
+    radial-gradient(circle at 80% 40%, #00ffc844 0 10%, transparent 11% 100%),
+    radial-gradient(circle at 60% 80%, #00e6ff33 0 14%, transparent 15% 100%),
+    linear-gradient(180deg, #001e22, #05363c);
+  animation:waves 9s ease-in-out infinite alternate;
+}
+@keyframes waves{
+  0%{transform:translateY(0) scale(1); filter:hue-rotate(0deg)}
+  100%{transform:translateY(-8px) scale(1.02); filter:hue-rotate(10deg)}
+}
+
+/* v1.0.19 minimal: fade-in for instruction elements */
+.fadein{animation:fadeIn 1s ease both}
+
+/* v1.0.20 MIN: vehicle bounce */
+.vehicle img{animation:vehBounce 2.4s ease-in-out infinite}
+.vehicle:nth-child(2) img{animation-delay:.6s}
+@keyframes vehBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
