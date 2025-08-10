@@ -71,7 +71,8 @@ if (tukCard){  tukCard.style.cursor='pointer';  tukCard.onclick =()=>startWith('
 // Game state
 let playing=false,score=0,lives=3,level=1; window.playerImg=document.getElementById('img-boat');
 const player={x:W/2,y:H*0.7,vx:0,vy:0,base:3.0,spd:3.0,r:16};
-let pellets=[],mangoes=[],durians=[],redbulls=[],ghosts=[]; let frightened=false,ft=0,turbo=false,tt=0;
+let pellets=[],mangoes=[],durians=[],redbulls=[],ghosts=[];
+let frightened=false,ft=0,turbo=false,tt=0,aggroTime=0;
 let faceDir = -1; // -1 = left, 1 = right
 
 const imgBG=document.getElementById('img-bg'),imgBoat=document.getElementById('img-boat'),imgTuk=document.getElementById('img-tuktuk'),imgGhost=document.getElementById('img-ghost'),imgCoco=document.getElementById('img-coconut'),imgPalm=document.getElementById('img-palm'),imgMango=document.getElementById('img-mango'),imgDur=document.getElementById('img-durian'),imgRB=document.getElementById('img-redbull');
@@ -105,7 +106,7 @@ howtoNext.onclick=()=>{
 function setVehicle(kind){ window.playerImg = (kind==='tuktuk' && imgTuk)? imgTuk : imgBoat; }
 
 // Gameplay bootstrap
-function beginGame(){ playing=true; score=0; lives=3; level=1; player.base=3.0; player.spd=player.base; frightened=false; turbo=false; ft=tt=0; updateHUD(); resetLevel(); stopAllMusic(); playLevelMusic(level); last=performance.now(); requestAnimationFrame(loop); }
+function beginGame(){ playing=true; score=0; lives=3; level=1; player.base=3.0; player.spd=player.base; frightened=false; turbo=false; ft=tt=aggroTime=0; updateHUD(); resetLevel(); stopAllMusic(); playLevelMusic(level); last=performance.now(); requestAnimationFrame(loop); }
 let last=0; function loop(now){ if(!playing)return; const dt=Math.min(0.033,(now-last)/1000); last=now; update(dt); render(); requestAnimationFrame(loop); }
 // Spawns
 let spawnDelay=5+Math.random()*2;
@@ -123,7 +124,7 @@ ghosts.forEach(g=>{
   g.dir += (desired - g.dir) * 0.08;
 
   // Speed factor
-  const sp = g.base * (frightened?0.6:1);
+  const sp = g.base * (frightened?0.6:(aggroTime>0?1.5:1));
   const nx = g.x + Math.cos(g.dir) * sp;
   const ny = g.y + Math.sin(g.dir) * sp;
 
@@ -174,10 +175,20 @@ for(let i=0;i<ghosts.length;i++){
 
 for(const p of pellets){ if(!p.eaten){ const dx=player.x-p.x,dy=player.y-p.y; if(dx*dx+dy*dy < (player.r + RAD.coco)*(player.r + RAD.coco)){ p.eaten=true; score+=10; try{sEat.currentTime=0;sEat.play();}catch(e){} if(Math.random()<0.1) IAP.addDiamonds(1); } } }
   for(const m of mangoes){ const dx=player.x-m.x,dy=player.y-m.y; if(dx*dx+dy*dy < (m.r + player.r)*(m.r + player.r)){ score+=200; try{sM.currentTime=0;sM.play();}catch(e){} m.x=-999; } } mangoes=mangoes.filter(m=>m.x>0);
-  for(const d of durians){ const dx=player.x-d.x,dy=player.y-d.y; if(dx*dx+dy*dy<(d.r+player.r)**2){ frightened=true; ft=8+Math.random()*3; try{sDur.currentTime=0;sDur.play();sF.play();}catch(e){} d.x=-999; } } durians=durians.filter(d=>d.x>0);
+  for(const d of durians){ const dx=player.x-d.x,dy=player.y-d.y; if(dx*dx+dy*dy<(d.r+player.r)**2){ frightened=true; ft=5; aggroTime=0; try{sDur.currentTime=0;sDur.play();sF.play();}catch(e){} d.x=-999; } } durians=durians.filter(d=>d.x>0);
   for(const b of redbulls){ const dx=player.x-b.x,dy=player.y-b.y; if(dx*dx+dy*dy<(b.r+player.r)**2){ turbo=true; tt=6; try{sPow.currentTime=0;sPow.play();}catch(e){} b.x=-999; } } redbulls=redbulls.filter(b=>b.x>0);
   for(const g of ghosts){ const dx=player.x-g.x,dy=player.y-g.y; if(dx*dx+dy*dy < (player.r + RAD.coco)*(player.r + RAD.coco)){ if(frightened){ score+=100; g.x=Math.random()*W; g.y=160+Math.random()*100; } else if(!turbo){ lives--; try{sHit.currentTime=0;sHit.play();}catch(e){} if(lives<=0){ playing=false; stopAllMusic(); document.getElementById('finalScore').textContent=score; IAP.setBest(score); gameOver.classList.remove('hidden'); gameOver.classList.add('show'); return; } else { player.x=W/2; player.y=H*0.7; player.vx=player.vy=0; } } } }
-  if(frightened){ ft-=dt; if(ft<=0) frightened=false; } if(turbo){ tt-=dt; if(tt<=0) turbo=false; }
+  if(frightened){
+    ft-=dt;
+    if(ft<=0){
+      frightened=false;
+      aggroTime=5;
+    }
+  } else if(aggroTime>0){
+    aggroTime-=dt;
+    if(aggroTime<=0) aggroTime=0;
+  }
+  if(turbo){ tt-=dt; if(tt<=0) turbo=false; }
   if(pellets.every(p=>p.eaten)){ level++; player.base+=0.18; player.spd=player.base; ghosts.forEach(g=> g.base+=0.22); resetLevel(); playLevelMusic(level); }
   spawnSpecials(dt); updateHUD();
 }
