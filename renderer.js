@@ -24,49 +24,17 @@ window.addEventListener('click',()=>{ if(musicIntro.paused){ musicIntro.play().c
 document.getElementById('btnMute').onclick=()=>{const all=[musicIntro,...tracks,sEat,sPow,sHit,sDur,sF,sM].filter(Boolean);const m=!musicIntro.muted;all.forEach(a=>a.muted=m);document.getElementById('btnMute').textContent=m?'🔇':'🔊';};
 // Vehicle UI
 const optBoat=document.getElementById('opt-boat'),optTuk=document.getElementById('opt-tuktuk');
-function updateDim(){const b=optBoat.querySelector('input').checked;optBoat.classList.toggle('dim',!b);optTuk.classList.toggle('dim',!!b);} 
-optBoat.addEventListener('click',()=>{optBoat.querySelector('input').checked=true;updateDim();
-
-// v1.0.20 MIN — click vehicle to start (with fade-out)
-if (typeof updateDim==='function') updateDim();
-const vehicleOverlay = document.getElementById('vehicle');
+function updateDim(){const b=optBoat.querySelector('input').checked;optBoat.classList.toggle('dim',!b);optTuk.classList.toggle('dim',!!b);}
 function startWith(kind){
+  if (typeof updateDim==='function') updateDim();
   try{ setVehicle(kind); }catch(e){}
-  if (vehicleOverlay){ vehicleOverlay.classList.add('fade-leave'); setTimeout(()=>{ hide(vehicleOverlay); }, 550); }
+  const vehicleOverlay=document.getElementById('vehicle');
+  if (vehicleOverlay){ vehicleOverlay.classList.add('fade-leave'); setTimeout(()=>{ hide(vehicleOverlay); },550); }
   beginGame();
 }
-const boatCard=document.getElementById('opt-boat');
-const tukCard =document.getElementById('opt-tuktuk');
-if (boatCard){ boatCard.style.cursor='pointer'; boatCard.onclick=()=>startWith('boat'); }
-if (tukCard){  tukCard.style.cursor='pointer';  tukCard.onclick =()=>startWith('tuktuk'); }
-}); optTuk.addEventListener('click',()=>{optTuk.querySelector('input').checked=true;updateDim();
-
-// v1.0.20 MIN — click vehicle to start (with fade-out)
-if (typeof updateDim==='function') updateDim();
-const vehicleOverlay = document.getElementById('vehicle');
-function startWith(kind){
-  try{ setVehicle(kind); }catch(e){}
-  if (vehicleOverlay){ vehicleOverlay.classList.add('fade-leave'); setTimeout(()=>{ hide(vehicleOverlay); }, 550); }
-  beginGame();
-}
-const boatCard=document.getElementById('opt-boat');
-const tukCard =document.getElementById('opt-tuktuk');
-if (boatCard){ boatCard.style.cursor='pointer'; boatCard.onclick=()=>startWith('boat'); }
-if (tukCard){  tukCard.style.cursor='pointer';  tukCard.onclick =()=>startWith('tuktuk'); }
-}); updateDim();
-
-// v1.0.20 MIN — click vehicle to start (with fade-out)
-if (typeof updateDim==='function') updateDim();
-const vehicleOverlay = document.getElementById('vehicle');
-function startWith(kind){
-  try{ setVehicle(kind); }catch(e){}
-  if (vehicleOverlay){ vehicleOverlay.classList.add('fade-leave'); setTimeout(()=>{ hide(vehicleOverlay); }, 550); }
-  beginGame();
-}
-const boatCard=document.getElementById('opt-boat');
-const tukCard =document.getElementById('opt-tuktuk');
-if (boatCard){ boatCard.style.cursor='pointer'; boatCard.onclick=()=>startWith('boat'); }
-if (tukCard){  tukCard.style.cursor='pointer';  tukCard.onclick =()=>startWith('tuktuk'); }
+optBoat.addEventListener('click',()=>{optBoat.querySelector('input').checked=true;startWith('boat');});
+optTuk .addEventListener('click',()=>{optTuk .querySelector('input').checked=true;startWith('tuktuk');});
+updateDim();
 
 // Game state
 let playing=false,score=0,lives=3,level=1; window.playerImg=document.getElementById('img-boat');
