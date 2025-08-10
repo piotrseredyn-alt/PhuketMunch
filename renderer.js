@@ -72,11 +72,24 @@ if (tukCard){  tukCard.style.cursor='pointer';  tukCard.onclick =()=>startWith('
 let playing=false,score=0,lives=3,level=1; window.playerImg=document.getElementById('img-boat');
 const player={x:W/2,y:H*0.7,vx:0,vy:0,base:3.0,spd:3.0,r:16};
 let pellets=[],mangoes=[],durians=[],redbulls=[],ghosts=[]; let frightened=false,ft=0,turbo=false,tt=0;
-let faceDir = 1; // 1 = right, -1 = left
+let faceDir = -1; // -1 = left, 1 = right
 
 const imgBG=document.getElementById('img-bg'),imgBoat=document.getElementById('img-boat'),imgTuk=document.getElementById('img-tuktuk'),imgGhost=document.getElementById('img-ghost'),imgCoco=document.getElementById('img-coconut'),imgPalm=document.getElementById('img-palm'),imgMango=document.getElementById('img-mango'),imgDur=document.getElementById('img-durian'),imgRB=document.getElementById('img-redbull');
 // Controls
-document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')player.vx=-player.spd; faceDir = -1;if(k==='arrowright'||k==='d')player.vx=player.spd; faceDir = 1;if(k==='arrowup'||k==='w')player.vy=-player.spd;if(k==='arrowdown'||k==='s')player.vy=player.spd});
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'arrowleft' || k === 'a') {
+    player.vx = -player.spd;
+    faceDir = -1;
+  } else if (k === 'arrowright' || k === 'd') {
+    player.vx = player.spd;
+    faceDir = 1;
+  } else if (k === 'arrowup' || k === 'w') {
+    player.vy = -player.spd;
+  } else if (k === 'arrowdown' || k === 's') {
+    player.vy = player.spd;
+  }
+});
 document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(['arrowleft','a','arrowright','d'].includes(k))player.vx=0;if(['arrowup','w','arrowdown','s'].includes(k))player.vy=0});
 // Overlay helpers
 function show(el){ el.style.display='flex'; el.classList.add('show'); el.classList.remove('hidden'); }
@@ -202,7 +215,14 @@ for(const p of pellets){ if(!p.eaten) ctx.drawImage(imgCoco,p.x-SIZE.coco/2,p.y-
   mangoes.forEach(o=> ctx.drawImage(imgMango,o.x-SIZE.mango/2,o.y-SIZE.mango/2,SIZE.mango,SIZE.mango));
   durians.forEach(o=> ctx.drawImage(imgDur,o.x-SIZE.durian/2,o.y-SIZE.durian/2,SIZE.durian,SIZE.durian));
   redbulls.forEach(o=> ctx.drawImage(imgRB,o.x-SIZE.rbW/2,o.y-SIZE.rbH/2,SIZE.rbW,SIZE.rbH));
-  ctx.save(); ctx.translate(player.x, player.y); if(faceDir<0){ ctx.scale(-1,1); } ctx.globalAlpha = turbo?0.88:1; ctx.drawImage(window.playerImg, -SIZE.player/2, -SIZE.player/2, SIZE.player, SIZE.player); ctx.restore();
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  if (faceDir > 0) {
+    ctx.scale(-1, 1);
+  }
+  ctx.globalAlpha = turbo ? 0.88 : 1;
+  ctx.drawImage(window.playerImg, -SIZE.player/2, -SIZE.player/2, SIZE.player, SIZE.player);
+  ctx.restore();
   ctx.globalAlpha=frightened?0.7:1; ghosts.forEach(g=> ctx.drawImage(imgGhost,g.x-SIZE.ghost/2,g.y-SIZE.ghost/2,SIZE.ghost,SIZE.ghost)); ctx.globalAlpha=1;
 }
 function updateHUD(){ hudScore.textContent=score; hudLives.textContent=lives; hudLevel.textContent=level; hudDiamonds.textContent=IAP.getDiamonds(); hudMode.textContent = frightened?'frightened':(turbo?'turbo':'normal'); }
